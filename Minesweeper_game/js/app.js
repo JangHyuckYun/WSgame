@@ -18,10 +18,12 @@ function setting(){
 		if(cnt == 8){
 			var size = 400;
 			var ani_cnt = "1";
+			document.querySelector(".timer").style.bottom = "290px";
+			document.querySelector(".timer").style.left = "180px";
 		}else if(cnt == 14) {
 			var size = 800;
 			var ani_cnt = "2";
-		}else if(cnt == 20){ 
+		}else if(cnt == 20){
 			var size = 1000;
 			var ani_cnt = "3";
 		}else{
@@ -55,6 +57,7 @@ function setting(){
 	}
 
 	function game_start(cnt){
+		timer();
 		var mine_arr= [];
 		for(var i=0; i<cnt; i++){
 			var x = Math.floor(Math.random() * cnt)+1;
@@ -78,7 +81,10 @@ function setting(){
 			document.querySelector(`#menu>li:nth-child(${mine_arr[j][1]})>ul>li:nth-child(${mine_arr[j][0]})`).style.background ="#"+ran_color;
 		}
 	}
+	function timer(){
+		var timer, i = 0, divide = 100;
+	}
 
-window.onload = function(){
-	setting();
-}
+	window.onload = function(){
+		setting();
+	}
