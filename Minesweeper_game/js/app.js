@@ -1,8 +1,8 @@
-function setting(){
+function click(game){
 		var btn = Array.from(document.querySelectorAll(".btn")); //Array.from = 배열로 바꿔줌
 		btn.map(v=> {
 			v.addEventListener("click", function() {
-				var cnt = this.dataset.cnt;
+				cnt = Number(this.dataset.cnt);
 				if(cnt != 8 && cnt != 14 && cnt != 20){
 					alert("값이 잘못되었습니다 다시 시도하여 주세요");
 					return false;
@@ -11,20 +11,24 @@ function setting(){
 					create_mw(cnt);
 				}
 			})
-		})
+		});
+		// li들을 클릭할떄
+		if(game == "start"){
+			var li = Array.from(document.querySelectorAll("li"));
+			li.map(v => v.addEventListener("click",function(){
+					console.log(v.item());
+			}));
+		}
 	}
 	function create_mw(cnt){
-		cnt = Number(cnt);
 		if(cnt == 8){
 			var size = 400;
 			var ani_cnt = "1";
-			document.querySelector(".timer").style.bottom = "290px";
-			document.querySelector(".timer").style.left = "180px";
 		}else if(cnt == 14) {
 			var size = 800;
 			var ani_cnt = "2";
 		}else if(cnt == 20){
-			var size = 1000;
+			var size = 900;
 			var ani_cnt = "3";
 		}else{
 			alert("잘못된 값입니다 다시 시도해 주세요.");
@@ -51,13 +55,12 @@ function setting(){
 		var ul_li_ul_li = Array.from(document.querySelectorAll(".NW>ul>li>ul>li"));
 		ul_li_ul_li.map(v => v.style.height = `calc(100% / ${cnt} )`);
 		nav.style.visibility = "visible";
-		g_s.style.visibility = "visible";
-		g_s.style.animation = "down"+ani_cnt+" 0.5s both";
-		game_start(cnt);
+		var game = "start";
+		click(game);
+		setTimeout(function(){timer()},500);
 	}
 
 	function game_start(cnt){
-		timer();
 		var mine_arr= [];
 		for(var i=0; i<cnt; i++){
 			var x = Math.floor(Math.random() * cnt)+1;
@@ -77,14 +80,19 @@ function setting(){
 		}
 		for(var j = 0; j<cnt; j++){
 			ran_color = String(Math.round(Math.random() * 0xFFFFFF).toString(16));
-			console.log("["+mine_arr[j][1]+"]"+"["+mine_arr[j][0] + "]");
 			document.querySelector(`#menu>li:nth-child(${mine_arr[j][1]})>ul>li:nth-child(${mine_arr[j][0]})`).style.background ="#"+ran_color;
 		}
 	}
 	function timer(){
 		var timer, i = 0, divide = 100;
+		timer = document.querySelector(".tiemr_second");
+		setInterval(function(){
+			i++;
+			timer.innerHTML = (i / divide);
+		},(1000/ divide));
 	}
 
 	window.onload = function(){
-		setting();
+		var cnt = 0;
+		click();
 	}

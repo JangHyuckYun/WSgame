@@ -6,8 +6,7 @@
 .btn_box{width: 1000; height::100px; position: relative; z-index: 10000; display: flex; justify-content: space-around;}
 .btn_box>button{width: 150px; height: 80px; font-size: 25px; position: relative; z-index: 100000;}
 
-.main{width: 570px; height:80px; display: flex; justify-content: space-between;position: absolute; top: 50%;left: 50%; transform: translate(-50%,-50%);}
-.main>p{position: absolute; font-size: 20px;}
+.timer{position: absolute; font-size: 20px; top: 0;	left: 0;	}
 .g_s{transition: 0.5s; color:black; position: absolute; left: 50px;}
 
 .NW{width: 250px; height: 250px; border:5px solid black;position: relative; z-index: 1; top: 50%;left: 50%; transform: translate(-50%,-50%); transition: 0.5s; visibility: hidden;}
@@ -16,7 +15,7 @@
 .NW>ul>li>ul{width: 100%;height: 100%;}
 .NW>ul>li>ul>li{width: 100%; height:calc(100% / 5); border: 1px solid black;}
 
-@keyframes down1{
+/*@keyframes down1{
 	0%{ transform: translate(-50%, -3000px); }
 	100%{ transform: translate(-50%, -720%); }
 }
@@ -28,3 +27,4 @@
 	0%{ transform: translate(-50%, -3000px); }
 	100%{ transform: translate(-50%, -1450%); }
 }
+*/
