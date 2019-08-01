@@ -72,6 +72,7 @@ function create_mw(cnt){// 입력받은 값 만큼 li 생성
 }
 function play_game(two_arr,boom_arr,cnt){//게임 시작
 	let chk_fir = 0;
+	const createRand = cnt => Math.floor(Math.random() * cnt-1) + 1;
 	two_arr.forEach((x,i)=> {
 		x.forEach((y,j) => {
 			y.addEventListener("click",() => {
@@ -80,9 +81,7 @@ function play_game(two_arr,boom_arr,cnt){//게임 시작
 					for(let b = 0,len = boom_arr[a].length; b < len; b++ ){
 						v = boom_arr[a][b].split(",");
 						if(chk_fir == 0 && ~~v[0] == i && ~~v[1] == j){
-							const createRand = cnt => Math.floor(Math.random() * cnt-1) + 1;
-							boom_arr[a][b] = [createRand(cnt)+","+createRand(cnt)];
-							console.log(boom_arr[a][b]);
+							boom_arr[a][b] = createRand(cnt) + "," + createRand(cnt);
 							chk_fir = 1;
 						}else if(~~v[0] == i && ~~v[1] == j) return end_game(boom_arr,two_arr,cnt);
 					}
