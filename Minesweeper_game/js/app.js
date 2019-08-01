@@ -1,3 +1,4 @@
+
 // click 이벤트
 const all = (ele, parent = document) => parent.querySelectorAll(ele)
 const one = (ele, parent = document) => parent.querySelector(ele)
@@ -8,6 +9,7 @@ function click(){
 	btn.forEach(v=> {
 		v.addEventListener("click", () => {
 			const cnt = ~~v.dataset.cnt;
+			if(v.classList.contains('reload')) return reload();
 			if (Array.from([8, 14, 20]).indexOf(cnt) === -1) {
 				alert("값이 잘못되었습니다 다시 시도하여 주세요");
 				return false;
@@ -70,19 +72,21 @@ function create_mw(cnt){
 			// two_arr[i][j].innerHTML = "["+i+"]" + " "+ "["+j+"]";
 		}
 	}
-	game_start(cnt);
-	test(two_arr);
+	game_start(cnt,two_arr);
 	setTimeout(timer,500);
 }
 
-function test(two_arr){
+function test(two_arr,boom_arr,cnt){
 	two_arr.forEach((x,i)=> {
 		x.forEach((y,j) => {
 			y.addEventListener("click",() => {
-				if(y.classList.contains('boom')) return end_game();
-
-				let num = 0;
-				var check_arr = [];
+				let v,num = 0;
+				for(let a = 0; a < cnt; a++){
+					for(let b = 0,len = boom_arr[a].length; b < len; b++ ){
+						v = boom_arr[a][b].split(",");
+						if(~~v[0] == i && ~~v[1] == j) return end_game(boom_arr,two_arr,cnt);
+					}
+				}
 				// 클릭요소 기준 왼쪽
 				// if(two_arr[i][j-1]) check_arr.push(two_arr[i][j-1]);
 				// 클릭요소 기준 오른쪽
@@ -90,8 +94,14 @@ function test(two_arr){
 				for(let q= -1; q<2; q++){
 					for(let w= -1; w<2; w++){
 						if(q==0 && w==0) continue;
-						if(two_arr[i+q] && two_arr[i+q][j+w] && two_arr[i+q][j+w].classList.contains("boom")){
-							num++;
+						if(two_arr[i+q] && two_arr[i+q][j+w]){
+							for(let t = 0; t < cnt; t++){
+								for(let tt = 0 , len = boom_arr[i].length; tt < len; tt++){
+
+									if(~~boom_arr[t][tt].split(",")[0] == q+i && ~~boom_arr[t][tt].split(",")[1] == w+i) num++;
+								}
+							}
+							// num++;
 						} 
 					}
 				}
@@ -114,12 +124,14 @@ function test(two_arr){
 			});
 		});
 	});
+	
 }
 
 // 폭탄 넣기
-function game_start(cnt){
+function game_start(cnt,two_arr){
 	const mine_arr= [];
-	const createRand = cnt => Math.floor(Math.random() * cnt) + 1
+	const boom_arr = [];
+	const createRand = cnt => Math.floor(Math.random() * cnt-1) + 1
 	for(let i=0; i<cnt; i++){
 		let x = createRand(cnt)
 		let y = createRand(cnt)
@@ -131,26 +143,57 @@ function game_start(cnt){
 				i--;
 			}
 		}
-		if (plug)
+		if (plug){
 			mine_arr.push([x, y]);
-		else
-			i--;
+			boom_arr.push([x +","+y]);
+		}else
+		i--;
 	}
-	for(let j = 0; j<cnt; j++){
-		one(`#menu>li:nth-child(${mine_arr[j][1]})>ul>li:nth-child(${mine_arr[j][0]})`).classList.add("boom");
-	}
+	test(two_arr,boom_arr,cnt);
+	// for(let j = 0; j<cnt; j++){
+	// 	one(`#menu>li:nth-child(${mine_arr[j][1]})>ul>li:nth-child(${mine_arr[j][0]})`).classList.add("boom");
+	// }
 }
-function end_game(){
-	Array.from(all("li")).filter(v=> v.classList.contains('boom')).map(v=> v.classList.remove("black"));
+function end_game(boom_arr,two_arr,cnt){
+	const stop = "stop";
+	timer(stop);
+	alert("끝");
+	for(let i = 0; i < cnt; i++){
+		for(let j = 0 , len = boom_arr[i].length; j < len; j++){
+			var v = boom_arr[i][j].split(",");
+			two_arr[~~v[0]][~~v[1]].style.background = "red";
+		}
+	}
+	if(confirm("게임을 다시 시작 하시겠습니까?")){
+		one("#menu").empty();
+		one(".NW").style.visibility = "hidden";
+		setTimeout(_=>{one(".first_screen").style.display = "block";},500);
+	}else{
+		alert("이거보고 놀면서 다시 도전해 보세요");
+		const stop = "stop";
+		timer(stop);
+		one(".replay").style.display = "block";
+	}
+
 }
 // 게임 플레이 시간 표시
-function timer(){
+function timer(stop){
+	if(stop == "stop") return  clearInterval(time);
 	const target = one(".tiemr_second")
 	const divide = 100
 	let i = 0
-	setInterval(_ => {
-		timer.innerHTML = (++i / divide);
+	var time = setInterval(_ => {
+		target.innerHTML = (++i / divide);
 	}, (1000 / divide) );
+}
+HTMLElement.prototype.empty = function() {
+	var that = this;
+	while (that.hasChildNodes()) {
+		that.removeChild(that.lastChild);
+	}
+};
+function reload(){
+	location.reload();
 }
 // widnow 실행시
 window.onload = click
