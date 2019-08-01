@@ -4,7 +4,7 @@ const all = (ele, parent = document) => parent.querySelectorAll(ele)
 const one = (ele, parent = document) => parent.querySelector(ele)
 const crt = ele => document.createElement(ele)
 
-function click(){
+function click(){//처음 버튼클릭
 	var btn = Array.from(all(".btn")); //Array.from = 배열로 바꿔줌
 	btn.forEach(v=> {
 		v.addEventListener("click", () => {
@@ -19,8 +19,7 @@ function click(){
 		})
 	});
 }
-// 입력받은 값 만큼 li 생성
-function create_mw(cnt){
+function create_mw(cnt){// 입력받은 값 만큼 li 생성
 	var size, ani_cnt
 	switch (cnt) {
 		case 8 :
@@ -40,11 +39,9 @@ function create_mw(cnt){
 		return false;
 		break;
 	}
-
 	const nav = one(".NW"), g_s = one(".g_s")
 	nav.style.width = size+"px";
 	nav.style.height = size+"px";
-
 	for(var i = 0; i < cnt; i++){
 		let li = crt("li");
 		let ul = crt("ul");
@@ -55,7 +52,6 @@ function create_mw(cnt){
 		}
 		one("#menu").appendChild(li);
 	}
-
 	one(".first_screen").style.display = "none";
 	one(".timer").classList.remove("hidden");
 	Array.from(all("li")).map(v=> v.classList.add("black"));
@@ -69,14 +65,13 @@ function create_mw(cnt){
 		two_arr[i] = [];
 		for (let j = 0; j < cnt; j++) {
 			two_arr[i][j] = j == 0 ? li[i] : li[i2 += cnt];
-			// two_arr[i][j].innerHTML = "["+i+"]" + " "+ "["+j+"]";
 		}
 	}
-	game_start(cnt,two_arr);
+	push_boom(cnt,two_arr);
 	setTimeout(timer,500);
 }
-
-function test(two_arr,boom_arr,cnt){
+function play_game(two_arr,boom_arr,cnt){//게임 시작
+	let chk_fir = 0;
 	two_arr.forEach((x,i)=> {
 		x.forEach((y,j) => {
 			y.addEventListener("click",() => {
@@ -84,55 +79,40 @@ function test(two_arr,boom_arr,cnt){
 				for(let a = 0; a < cnt; a++){
 					for(let b = 0,len = boom_arr[a].length; b < len; b++ ){
 						v = boom_arr[a][b].split(",");
-						if(~~v[0] == i && ~~v[1] == j) return end_game(boom_arr,two_arr,cnt);
+						if(chk_fir == 0 && ~~v[0] == i && ~~v[1] == j){
+							const createRand = cnt => Math.floor(Math.random() * cnt-1) + 1;
+							boom_arr[a][b] = [createRand(cnt)+","+createRand(cnt)];
+							console.log(boom_arr[a][b]);
+							chk_fir = 1;
+						}else if(~~v[0] == i && ~~v[1] == j) return end_game(boom_arr,two_arr,cnt);
 					}
 				}
-				// 클릭요소 기준 왼쪽
-				// if(two_arr[i][j-1]) check_arr.push(two_arr[i][j-1]);
-				// 클릭요소 기준 오른쪽
-				// if(two_arr[i][j+1]) check_arr.push(two_arr[i][j+1]);
 				for(let q= -1; q<2; q++){
 					for(let w= -1; w<2; w++){
 						if(q==0 && w==0) continue;
 						if(two_arr[i+q] && two_arr[i+q][j+w]){
 							for(let t = 0; t < cnt; t++){
 								for(let tt = 0 , len = boom_arr[i].length; tt < len; tt++){
-
-									if(~~boom_arr[t][tt].split(",")[0] == q+i && ~~boom_arr[t][tt].split(",")[1] == w+i) num++;
+									// console.log(~~boom_arr[t][tt].split(",")[0] + " == " + (q+i));
+									// console.log(~~boom_arr[t][tt].split(",")[0] + " == " + (w+i));
+									if(~~boom_arr[t][tt].split(",")[0] == q+i && ~~boom_arr[t][tt].split(",")[1] == w+j) num++;
 								}
 							}
-							// num++;
 						} 
 					}
 				}
-				/*check_arr.forEach(v => {
-					if (v.classList.contains('boom')) num++;
-				});*/
-				/*if(i - 1 != -1 && i + 1 != 8 && j + 1 != 8 && i - 1 != -1 && j - 1 != -1){
-					check_arr.push(
-						two_arr[i-1][j-1],
-						two_arr[i-1][j],
-						two_arr[i-1][j+1],
-
-						two_arr[i+1][j-1]
-						two_arr[i+1][j],
-						two_arr[i+1][j+1],
-					);
-				};*/
 				y.style.background = "white";
 				y.innerHTML = num; 
 			});
 		});
-	});
-	
+	});	
 }
-
-// 폭탄 넣기
-function game_start(cnt,two_arr){
+function push_boom(cnt,two_arr){// 폭탄 넣기
+	var cnt2 = cnt == 20 ? cnt * 3 : cnt;  
 	const mine_arr= [];
 	const boom_arr = [];
 	const createRand = cnt => Math.floor(Math.random() * cnt-1) + 1
-	for(let i=0; i<cnt; i++){
+	for(let i=0; i<cnt2; i++){
 		let x = createRand(cnt)
 		let y = createRand(cnt)
 		let plug = true;
@@ -149,12 +129,9 @@ function game_start(cnt,two_arr){
 		}else
 		i--;
 	}
-	test(two_arr,boom_arr,cnt);
-	// for(let j = 0; j<cnt; j++){
-	// 	one(`#menu>li:nth-child(${mine_arr[j][1]})>ul>li:nth-child(${mine_arr[j][0]})`).classList.add("boom");
-	// }
+	play_game(two_arr,boom_arr,cnt);
 }
-function end_game(boom_arr,two_arr,cnt){
+function end_game(boom_arr,two_arr,cnt){//게임 finish
 	const stop = "stop";
 	timer(stop);
 	alert("끝");
@@ -169,15 +146,13 @@ function end_game(boom_arr,two_arr,cnt){
 		one(".NW").style.visibility = "hidden";
 		setTimeout(_=>{one(".first_screen").style.display = "block";},500);
 	}else{
-		alert("이거보고 놀면서 다시 도전해 보세요");
+		alert("여기서 놀면서 다시 도전해 보세요");
 		const stop = "stop";
 		timer(stop);
 		one(".replay").style.display = "block";
 	}
-
 }
-// 게임 플레이 시간 표시
-function timer(stop){
+function timer(stop){// 게임 플레이 시간 표시
 	if(stop == "stop") return  clearInterval(time);
 	const target = one(".tiemr_second")
 	const divide = 100
@@ -186,14 +161,11 @@ function timer(stop){
 		target.innerHTML = (++i / divide);
 	}, (1000 / divide) );
 }
-HTMLElement.prototype.empty = function() {
+HTMLElement.prototype.empty = function() {//create empty()
 	var that = this;
 	while (that.hasChildNodes()) {
 		that.removeChild(that.lastChild);
 	}
 };
-function reload(){
-	location.reload();
-}
-// widnow 실행시
-window.onload = click
+function reload(){ location.reload(); }
+window.onload = click // widnow 실행시
