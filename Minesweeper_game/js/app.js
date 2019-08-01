@@ -22,20 +22,20 @@ function create_mw(cnt){
 	var size, ani_cnt
 	switch (cnt) {
 		case 8 :
-			size = 400;
-			ani_cnt = "1";
+		size = 400;
+		ani_cnt = "1";
 		break;
 		case 14 : 
-			size = 800;
-			ani_cnt = "2";
+		size = 800;
+		ani_cnt = "2";
 		break;
 		case 20 : 
-			size = 900;
-			ani_cnt = "3";
+		size = 900;
+		ani_cnt = "3";
 		break;
 		default : 
-			alert("잘못된 값입니다 다시 시도해 주세요.");
-			return false;
+		alert("잘못된 값입니다 다시 시도해 주세요.");
+		return false;
 		break;
 	}
 
@@ -56,7 +56,7 @@ function create_mw(cnt){
 
 	one(".first_screen").style.display = "none";
 	one(".timer").classList.remove("hidden");
-	// Array.from(all("li")).map(v=> v.classList.add("start"));
+	Array.from(all("li")).map(v=> v.classList.add("black"));
 	Array.from(all(".NW>ul>li>ul>li")).forEach(v => v.style.height = `calc(100% / ${cnt} )`);
 	nav.style.visibility = "visible";
 
@@ -66,28 +66,51 @@ function create_mw(cnt){
 		let i2 = i;
 		two_arr[i] = [];
 		for (let j = 0; j < cnt; j++) {
-			two_arr[i][j] = j == 0 ? li[i] : li[i2 += 8]
+			two_arr[i][j] = j == 0 ? li[i] : li[i2 += cnt];
+			// two_arr[i][j].innerHTML = "["+i+"]" + " "+ "["+j+"]";
 		}
 	}
 	game_start(cnt);
 	test(two_arr);
 	setTimeout(timer,500);
 }
+
 function test(two_arr){
 	two_arr.forEach((x,i)=> {
 		x.forEach((y,j) => {
 			y.addEventListener("click",() => {
-				console.log(i+" "+j);
+				if(y.classList.contains('boom')) return end_game();
+
 				let num = 0;
-				// 클릭 요소 기준 왼쪽
-				Array.from([
-					two_arr[i][j-1],
-					two_arr[i][j+1],
-					two_arr[i-1][j],
-					two_arr[i+1][j]
-				]).forEach(v => {
+				var check_arr = [];
+				// 클릭요소 기준 왼쪽
+				// if(two_arr[i][j-1]) check_arr.push(two_arr[i][j-1]);
+				// 클릭요소 기준 오른쪽
+				// if(two_arr[i][j+1]) check_arr.push(two_arr[i][j+1]);
+				for(let q= -1; q<2; q++){
+					for(let w= -1; w<2; w++){
+						if(q==0 && w==0) continue;
+						if(two_arr[i+q] && two_arr[i+q][j+w] && two_arr[i+q][j+w].classList.contains("boom")){
+							num++;
+						} 
+					}
+				}
+				/*check_arr.forEach(v => {
 					if (v.classList.contains('boom')) num++;
-				})
+				});*/
+				/*if(i - 1 != -1 && i + 1 != 8 && j + 1 != 8 && i - 1 != -1 && j - 1 != -1){
+					check_arr.push(
+						two_arr[i-1][j-1],
+						two_arr[i-1][j],
+						two_arr[i-1][j+1],
+
+						two_arr[i+1][j-1]
+						two_arr[i+1][j],
+						two_arr[i+1][j+1],
+					);
+				};*/
+				y.style.background = "white";
+				y.innerHTML = num; 
 			});
 		});
 	});
@@ -114,9 +137,11 @@ function game_start(cnt){
 			i--;
 	}
 	for(let j = 0; j<cnt; j++){
-		ran_color = String(Math.round(Math.random() * 0xFFFFFF).toString(16));
 		one(`#menu>li:nth-child(${mine_arr[j][1]})>ul>li:nth-child(${mine_arr[j][0]})`).classList.add("boom");
 	}
+}
+function end_game(){
+	Array.from(all("li")).filter(v=> v.classList.contains('boom')).map(v=> v.classList.remove("black"));
 }
 // 게임 플레이 시간 표시
 function timer(){
