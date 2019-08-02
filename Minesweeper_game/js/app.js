@@ -5,13 +5,16 @@
 const all = (ele, parent = document) => parent.querySelectorAll(ele)
 const one = (ele, parent = document) => parent.querySelector(ele)
 const crt = ele => document.createElement(ele)
+const target = one(".tiemr_second");
+const divide = 100;
+let timer,ttime = 0;
 
 function click(){//처음 버튼클릭
 var btn = Array.from(all(".btn")); //Array.from = 배열로 바꿔줌
 btn.forEach(v=> {
 	v.addEventListener("click", () => {
 		const cnt = ~~v.dataset.cnt;
-		if(v.classList.contains('reload')) return reload();
+		if(v.classList.contains('replay')) return reoload();
 		if (Array.from([9, 16, 30]).indexOf(cnt) === -1) {
 			alert("값이 잘못되었습니다 다시 시도하여 주세요");
 			return false;
@@ -64,6 +67,7 @@ function create_mw(cnt){// 입력받은 값 만큼 li 생성
 		one("#menu").appendChild(li);
 	}
 	one(".first_screen").style.display = "none";
+	one(".op").style.width = `${size}px`;
 	one(".timer").classList.remove("hidden");
 	Array.from(all("li")).map(v=> v.classList.add("black"));
 	Array.from(all("#menu>li>ul>li")).forEach(v=> v.style.lineHeight = lh+"px");
@@ -79,10 +83,10 @@ function create_mw(cnt){// 입력받은 값 만큼 li 생성
 			two_arr[i][j] = j == 0 ? li[i] : li[i2 += cnt];
 		}
 	}
-	setTimeout(timer,500);
 	push_boom(cnt,two_arr);
 }
 function play_game(two_arr,boom_arr,cnt,cnt2){//게임 시작
+	timer = setInterval(time,(1000/divide));
 	let chk_fir = 0,boom,ranX,ranY;
 	const createRand = cnt => Math.floor(Math.random() * cnt-1) + 1;
 	two_arr.forEach((x,i)=> {
@@ -101,12 +105,10 @@ function play_game(two_arr,boom_arr,cnt,cnt2){//게임 시작
 											while(true){
 												ranX = createRand(cnt);
 												ranY = createRand(cnt);
-												if( ranX != (q+i) && ranY != (w+j)){
+												if( ranX != ~~boom[0] && ranY != ~~boom[0]){
 													break;
 												}
 											}
-											ranX = createRand(cnt);
-											ranY = createRand(cnt);
 											console.log(boom_arr[t][tt]);
 											boom_arr[t][tt] = ranX + "," + ranY;
 											console.log(boom_arr[t][tt]);
@@ -117,12 +119,16 @@ function play_game(two_arr,boom_arr,cnt,cnt2){//게임 시작
 							}
 						}
 					}
+					chk_fir = 1;
 				}
 
 				for(let a = 0; a < cnt2; a++){
 					for(let b = 0,len = boom_arr[a].length; b < len; b++ ){
 						v = boom_arr[a][b].split(",");
-						if(~~v[0] == i && ~~v[1] == j) return end_game(boom_arr,two_arr,cnt,cnt2);
+						if(~~v[0] == i && ~~v[1] == j){ 
+							clearInterval(timer);
+							return end_game(boom_arr,two_arr,cnt,cnt2);
+						}
 					}
 				}
 				for(let q= -1; q<2; q++){
@@ -198,34 +204,17 @@ function push_boom(cnt,two_arr){// 폭탄 넣기
 }
 
 function end_game(boom_arr,two_arr,cnt,cnt2){//게임 finish
-	const stop = "stop";
-	timer(stop);
-	alert("끝");
 	for(let i = 0; i < cnt2; i++){
 		for(let j = 0 , len = boom_arr[i].length; j < len; j++){
 			var v = boom_arr[i][j].split(",");
 			two_arr[~~v[0]][~~v[1]].style.background = "red";
 		}
 	}
-	if(confirm("게임을 다시 시작 하시겠습니까?")){
-		one("#menu").empty();
-		one(".NW").style.visibility = "hidden";
-		setTimeout(_=>{one(".first_screen").style.display = "block";},500);
-	}else{
-		alert("여기서 놀면서 다시 도전해 보세요");
-		const stop = "stop";
-		timer(stop);
-		one(".replay").style.display = "block";
-	}
+	one(".op").style.display = "block";
+	one(".replay").style.display = "block";
 }
-function timer(stop){// 게임 플레이 시간 표시
-	if(stop == "stop") return  clearInterval(time);
-	const target = one(".tiemr_second")
-	const divide = 100
-	let i = 0
-	var time = setInterval(_ => {
-		target.innerHTML = (++i / divide);
-	}, (1000 / divide) );
+function time(){// 게임 플레이 시간 표시
+	target.innerHTML = (++ttime/divide);	
 }
 HTMLElement.prototype.empty = function() {//create empty()
 	var that = this;
@@ -234,4 +223,7 @@ HTMLElement.prototype.empty = function() {//create empty()
 	}
 };
 function reload(){ location.reload(); }
-window.onload = click // widnow 실행시
+window.onload = _=>{
+	click();
+	one(".replay").style.display = "none";
+} // widnow 실행시
