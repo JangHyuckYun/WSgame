@@ -117,11 +117,11 @@ function play_game(two_arr,boom_arr,cnt,cnt2){//게임 시작
 					}
 					chk_fir = 1;
 				}
-				for(let test = 0; test < boom_arr.length; test++){
-					for(let test2 = 0; test2 < boom_arr[i].length; test2++){
-						console.log(boom_arr[test][test2]);
-					}
-				}
+				// for(let test = 0; test < boom_arr.length; test++){
+				// 	for(let test2 = 0; test2 < boom_arr[i].length; test2++){
+				// 		console.log(boom_arr[test][test2]);
+				// 	}
+				// }
 
 				for(let a = 0; a < cnt2; a++){
 					for(let b = 0,len = boom_arr[a].length; b < len; b++ ){
