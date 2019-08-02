@@ -1,4 +1,6 @@
-
+// document.addEventListener("click",e=>{
+// 	console.log(e.currentTarget);
+// });
 // click 이벤트
 const all = (ele, parent = document) => parent.querySelectorAll(ele)
 const one = (ele, parent = document) => parent.querySelector(ele)
@@ -70,44 +72,56 @@ function create_mw(cnt){// 입력받은 값 만큼 li 생성
 	push_boom(cnt,two_arr);
 	setTimeout(timer,500);
 }
-function play_game(two_arr,boom_arr,cnt){//게임 시작
-	let chk_fir = 0;
+function play_game(two_arr,boom_arr,cnt,cnt2){//게임 시작
+	let chk_fir = 0,boom;
 	const createRand = cnt => Math.floor(Math.random() * cnt-1) + 1;
 	two_arr.forEach((x,i)=> {
 		x.forEach((y,j) => {
-			y.addEventListener("click",() => {
+			y.addEventListener("click", e => {
+				console.log(e.currentTarget);
 				let v,num = 0;
-				for(let a = 0; a < cnt; a++){
+				for(let a = 0; a < cnt2; a++){
 					for(let b = 0,len = boom_arr[a].length; b < len; b++ ){
 						v = boom_arr[a][b].split(",");
-						if(chk_fir == 0 && ~~v[0] == i && ~~v[1] == j){
-							boom_arr[a][b] = createRand(cnt) + "," + createRand(cnt);
-							chk_fir = 1;
-						}else if(~~v[0] == i && ~~v[1] == j) return end_game(boom_arr,two_arr,cnt);
+						if(~~v[0] == i && ~~v[1] == j) return end_game(boom_arr,two_arr,cnt,cnt2);
 					}
 				}
 				for(let q= -1; q<2; q++){
 					for(let w= -1; w<2; w++){
 						if(q==0 && w==0) continue;
 						if(two_arr[i+q] && two_arr[i+q][j+w]){
-							for(let t = 0; t < cnt; t++){
-								for(let tt = 0 , len = boom_arr[i].length; tt < len; tt++){
-									// console.log(~~boom_arr[t][tt].split(",")[0] + " == " + (q+i));
-									// console.log(~~boom_arr[t][tt].split(",")[0] + " == " + (w+i));
-									if(~~boom_arr[t][tt].split(",")[0] == q+i && ~~boom_arr[t][tt].split(",")[1] == w+j) num++;
+							for(let t = 0; t < cnt2; t++){
+								for(let tt = 0 , len = boom_arr[t].length; tt < len; tt++){
+									boom = boom_arr[t][tt].split(",");
+									if(chk_fir == 1 && ~~boom[0] == q+i && ~~boom[1] == w+j)
+									if(~~boom[0] == q+i && ~~boom[1] == w+j){
+										
+										num++;
+									}
 								}
 							}
 						} 
 					}
 				}
+				// if(num == 0) two_arr[q+i][w+j].style.background = "white";
+				// if(num == 0){
+				// 	let bool = true;
+				// 	while(bool){
+
+				// 	}
+				// }
 				y.style.background = "white";
-				y.innerHTML = num; 
+				if(num != 0)y.innerHTML = num; 
 			});
 		});
 	});	
 }
 function push_boom(cnt,two_arr){// 폭탄 넣기
-	var cnt2 = cnt == 20 ? cnt * 3 : cnt;  
+	var cnt2 = cnt;
+	if(cnt == 8) cnt2 = 11; 
+	if(cnt == 14) cnt2 = 40; 
+	if(cnt == 20) cnt2 = 90; 
+
 	const mine_arr= [];
 	const boom_arr = [];
 	const createRand = cnt => Math.floor(Math.random() * cnt-1) + 1
@@ -124,17 +138,19 @@ function push_boom(cnt,two_arr){// 폭탄 넣기
 		}
 		if (plug){
 			mine_arr.push([x, y]);
+
 			boom_arr.push([x +","+y]);
 		}else
 		i--;
 	}
-	play_game(two_arr,boom_arr,cnt);
+	play_game(two_arr,boom_arr,cnt,cnt2);
 }
-function end_game(boom_arr,two_arr,cnt){//게임 finish
+
+function end_game(boom_arr,two_arr,cnt,cnt2){//게임 finish
 	const stop = "stop";
 	timer(stop);
 	alert("끝");
-	for(let i = 0; i < cnt; i++){
+	for(let i = 0; i < cnt2; i++){
 		for(let j = 0 , len = boom_arr[i].length; j < len; j++){
 			var v = boom_arr[i][j].split(",");
 			two_arr[~~v[0]][~~v[1]].style.background = "red";
