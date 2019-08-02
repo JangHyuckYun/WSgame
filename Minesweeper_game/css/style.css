@@ -1,24 +1,34 @@
 *{margin: 0;padding: 0;list-style: none; box-sizing: border-box;}
+body{overflow: hidden;}
 .replay{position: absolute; left: 0; top: 100px; display: none;}
-.wrap{width: 100%;height: 100vh; position: relative;}
+.wrap{width: 100%;height: 100vh; position: relative; background-size: 100% 100%;  }
 .hidden{visibility: hidden;}
 .start{background: black;}
 /*.black{background: black;}*/
 .boom{ z-index: 1; background-image: url("../img/dra.png"); background-size: 50px 50px; background-repeat: no-repeat; }
+header{position: fixed; width: 100%;}
+header>h1{text-align: center;font-weight: bold; font-size: 53px; line-height: 50px; color:green;}
 
 .first_screen{width: 1000;height: 100px;position: absolute; top: 50%;left: 50%; transform: translate(-50%,-100%);}
 .first_screen>h1{ color:gray;  font-weight: bold; line-height:100px;}
 .btn_box{width: 1000; height::100px; position: relative; z-index: 10000; display: flex; justify-content: space-around;}
 .btn_box>button{width: 150px; height: 80px; font-size: 25px; position: relative; z-index: 100000;}
 
+.start_page{width: 100%;height: 100vh;}
+.start_page>.start_btn{width: 150px;height: 50px; display: flex; justify-content: space-between; position: relative; top: 52.5%;left: 51.5%; transform: translate(-50%,-50%);}
+.start_page>.start_btn>button{width: 150px; height: 50px;}
+.start_page>.rule{position: absolute; left: 0; top: 15%;}
+
+/*.choose_page{visibility: hidden;}*/
+
 .timer{position: absolute; font-size: 20px; top: 0;	left: 0;	}
 .g_s{transition: 0.5s; color:black; position: absolute; left: 50px;}
 
-.NW{width: 250px; height: 250px; border:5px solid gray;position: relative; z-index: 1; top: 50%;left: 50%; transform: translate(-50%,-50%); transition: 0.5s; visibility: hidden;}
+.NW{width: 250px; height: 250px; border:5px solid gray;position: absolute; z-index: 1; top: 50%;left: 50%; transform: translate(-50%,-48%); transition: 0.5s; visibility: hidden;}
 .NW>ul{width: 100%;height: 100%;position: relative; display: flex;}
 .NW>ul>li{width:calc(100% / 5);height:100%; cursor: pointer;}
 .NW>ul>li>ul{width: 100%;height: 100%;}
-.NW>ul>li>ul>li{width: 100%; height:calc(100% / 5); background: black; border: 1px solid gray; color:black; text-align: center; line-height: 50px;}
+.NW>ul>li>ul>li{width: 100%; height:calc(100% / 5); background: black; border: 1px solid gray; color:black; text-align: center;}
 
 /*@keyframes down1{
 	0%{ transform: translate(-50%, -3000px); }

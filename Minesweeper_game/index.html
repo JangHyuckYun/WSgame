@@ -9,18 +9,35 @@
 </head>
 <body>
 	<div class="wrap">
-		<p class="timer hidden">총 플레이시간: <span class="tiemr_second"></span></p>
-		<button type="button" onclick="reload();" class ="replay" class="btn btn-primary btn">다시시작</button>
-
-		<div class="first_screen">
-			<h1>지뢰찾기의 사이즈를 지정해 주세요</h1>
-			<div class="btn_box">
-				<button type="button" data-cnt=8 class="btn btn-primary btn">8*8</button>
-				<span>지뢰갯수:  10개</span>
-				<button type="button" data-cnt=14 class="btn btn-primary btn">14*14</button>
-				<span>지뢰갯수:  40개</span>
-				<button type="button" data-cnt=20 class="btn btn-primary btn">20*20</button>
-				<span>지뢰갯수:  99개</span>
+		<header>
+			<h1>Lucky Minesweeper</h1>
+			<p class="timer hidden">총 플레이시간: <span class="tiemr_second"></span></p>
+			<button type="button" onclick="reload();" class ="replay" class="btn btn-primary btn">다시시작</button>
+		</header>
+		<div class="start_page">
+			<div class="start_btn">
+				<button type="button" class="btn btn-primary btn">게임시작</button>
+			</div>
+			<div class="rule">
+				<h1>이 지뢰찾기의 규칙</h1>
+				<ul>
+					<li>1.이 지뢰찾기는 운이 안좋으면 한번에 죽는다.</li>
+					<li></li>
+					<li></li>
+				</ul>
+			</div>
+		</div>
+		<div class="choose_page">
+			<div class="first_screen">
+				<h1>지뢰찾기의 사이즈를 지정해 주세요</h1>
+				<div class="btn_box">
+					<button type="button" data-cnt=9 class="btn btn-primary btn">9*9</button>
+					<span>지뢰갯수:  10개</span>
+					<button type="button" data-cnt=16 class="btn btn-primary btn">16*16</button>
+					<span>지뢰갯수:  40개</span>
+					<button type="button" data-cnt=30 class="btn btn-primary btn">30*16</button>
+					<span>지뢰갯수:  99개</span>
+				</div>
 			</div>
 		</div>
 		<nav class="NW">
@@ -28,7 +45,7 @@
 
 			</ul>
 		</nav>
-
+		<footer>제작자:윤장혁</footer>
 	</div>
 	<script src="js/app.js"></script>
 </body>
