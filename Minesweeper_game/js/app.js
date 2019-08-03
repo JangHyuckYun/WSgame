@@ -1,28 +1,31 @@
-const all = (ele, parent = document) => parent.querySelectorAll(ele)// click 이벤트
-const one = (ele, parent = document) => parent.querySelector(ele)
-const crt = ele => document.createElement(ele)
+const one = (ele, parent = document) => parent.querySelector(ele);
+const all = (ele, parent = document) => parent.querySelectorAll(ele);// click 이벤트
+const crt = ele => document.createElement(ele);
 const target = one(".tiemr_second");
 const divide = 100;
-let timer,ttime = 0;
+let timer, ttime = 0;
 
-function click(){//처음 버튼클릭
-var btn = Array.from(all(".btn")); //Array.from = 배열로 바꿔줌
-btn.forEach(v=> {
-	v.addEventListener("click", () => {
-		const cnt = ~~v.dataset.cnt;
-		const height = ~~v.dataset.h;
-		if(v.classList.contains('replay')) return reoload();
-		if (Array.from([9, 16, 30]).indexOf(cnt) === -1) {
-			alert("값이 잘못되었습니다 다시 시도하여 주세요");
-			return false;
-		}
-		one(".first_screen").style.display = "none";
-		create_mw(cnt,height);
-	})
-});
+
+function click() { // 처음 버튼클릭
+	stop_right_click();
+	let cnt;
+	let height;
+	all(".btn").forEach(v => {
+		v.addEventListener("click", () => {
+			cnt = ~~v.dataset.cnt;
+			height = ~~v.dataset.h;
+			if(v.classList.contains('replay')) return reload();
+			if ([9, 16, 30].indexOf(cnt) === -1) {
+				alert("값이 잘못되었습니다 다시 시도하여 주세요");
+				throw "wrong cnt";
+			}
+			one(".first_screen").style.display = "none";
+			create_mw(cnt,height);
+		})
+	});
 }
 function create_mw(cnt,height){// 입력받은 값 만큼 li 생성
-	var size,h, ani_cnt,lh;
+	let size,h, ani_cnt,lh;
 	switch (cnt) {
 		case 9 :
 		size = 450;
@@ -44,13 +47,13 @@ function create_mw(cnt,height){// 입력받은 값 만큼 li 생성
 		break;
 		default : 
 		alert("잘못된 값입니다 다시 시도해 주세요.");
-		return false;
+		throw 'wrong cnt';
 		break;
 	}
 	const nav = one(".NW"), g_s = one(".g_s")
 	nav.style.width = size+"px";
 	nav.style.height = `${h}px`;
-	for(var i = 0; i < cnt; i++){
+	for(let i = 0; i < cnt; i++){
 		let li = crt("li");
 		let ul = crt("ul");
 		for(let j = 0; j < height; j++){
@@ -64,9 +67,9 @@ function create_mw(cnt,height){// 입력받은 값 만큼 li 생성
 	one(".replay").style.display = "none";
 	one(".op").style.width = `${size}px`;
 	one(".timer").classList.remove("hidden");
-	Array.from(all("li")).map(v=> v.classList.add("black"));
-	Array.from(all("#menu>li>ul>li")).forEach(v=> v.style.lineHeight = lh+"px");
-	Array.from(all(".NW>ul>li>ul>li")).forEach(v => v.style.height = `calc(100% / ${cnt} )`);
+	all("li").forEach(v => v.classList.add("black"));
+	all("#menu>li>ul>li").forEach(v => v.style.lineHeight = lh+"px");
+	all(".NW>ul>li>ul>li").forEach(v => v.style.height = `calc(100% / ${cnt} )`);
 	nav.style.visibility = "visible";
 	const li = Array.from(all(".sub_li"));
 	const two_arr = [];
@@ -77,6 +80,7 @@ function create_mw(cnt,height){// 입력받은 값 만큼 li 생성
 			two_arr[i][j] = j == 0 ? li[i] : li[i2 += cnt];
 		}
 	}
+
 	push_boom(cnt,two_arr);
 }
 function play_game(two_arr,boom_arr,cnt,cnt2){//게임 시작
@@ -85,17 +89,21 @@ function play_game(two_arr,boom_arr,cnt,cnt2){//게임 시작
 	const createRand = cnt => Math.floor(Math.random() * cnt-1) + 1;
 	two_arr.forEach((x,i)=> {
 		x.forEach((y,j) => {
-			y.addEventListener("click", e => {
-				if(chk_final == ((cnt * cnt) - cnt2)){
-					clearInterval(timer);
-					return clear();
+			y.addEventListener("contextmenu",function(e){
+				if(e.button == 2){
+					if(y.style.background == "white"){
+						throw "이미 클릭한곳에는 우클릭을할 수 없습니다."; 
+					}else{
+						console.log("추가");
+						y.classList.toggle("boom");
+					}
 				}
-
-
+			})
+			y.addEventListener("click", e => {
 				let v,num = 0,num2 = 0;
 				if(chk_fir == 0){
-					for(var q = -1; q < 2; q++){
-						for(var w = -1; w < 2; w++){
+					for(let q = -1; q < 2; q++){
+						for(let w = -1; w < 2; w++){
 							if(two_arr[i+q] && two_arr[i+q][j+w]){
 								for(let t = 0; t < cnt2; t++){
 									for(let tt = 0 , len = boom_arr[t].length; tt < len; tt++){
@@ -160,12 +168,16 @@ function play_game(two_arr,boom_arr,cnt,cnt2){//게임 시작
 				}else{
 					y.innerHTML = num; 
 				}
+				if(chk_final == ((cnt * cnt) - cnt2)){
+					clearInterval(timer);
+					return clear();
+				}
 			});
 		});
 	});	
 }
 function push_boom(cnt,two_arr){// 폭탄 넣기
-	var cnt2 = cnt;
+	let cnt2 = cnt;
 	if(cnt == 9) cnt2 = 10; 
 	if(cnt == 16) cnt2 = 40; 
 	if(cnt == 30) cnt2 = 110; 
@@ -192,11 +204,10 @@ function push_boom(cnt,two_arr){// 폭탄 넣기
 	}
 	play_game(two_arr,boom_arr,cnt,cnt2);
 }
-
 function end_game(boom_arr,two_arr,cnt,cnt2){//게임 finish
 	for(let i = 0; i < cnt2; i++){
 		for(let j = 0 , len = boom_arr[i].length; j < len; j++){
-			var v = boom_arr[i][j].split(",");
+			let v = boom_arr[i][j].split(",");
 			two_arr[~~v[0]][~~v[1]].style.background = "red";
 		}
 	}
@@ -205,16 +216,30 @@ function end_game(boom_arr,two_arr,cnt,cnt2){//게임 finish
 }
 function time(){ target.innerHTML = (++ttime/divide); }
 function clear(){
-	one(".op").style.display = "block";
-	one(".replay").style.display = "block";
+	// one(".op").style.display = "block";
+	// one(".replay").style.display = "block";
 	alert("축하해요 클리어 하셨습니다"); 
+	for(let i = 0; i < cnt2; i++){
+		for(let j = 0 , len = boom_arr[i].length; j < len; j++){
+			let v = boom_arr[i][j].split(",");
+			two_arr[~~v[0]][~~v[1]].style.background = "red";
+		}
+	}
+}
+function stop_right_click() {
+	if(document.addEventListener){
+		document.addEventListener("contextmenu",function(e){
+			e.preventDefault();
+		})
+		
+	}
 }
 
 HTMLElement.prototype.empty = function() {//create empty()
-	var that = this;
+	let that = this;
 	while (that.hasChildNodes()) {
 		that.removeChild(that.lastChild);
 	}
 };
 function reload(){ location.reload(); }
-window.onload = click // widnow 실행시
+window.onload = click; // widnow 실행시
