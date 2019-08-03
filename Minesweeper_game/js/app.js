@@ -5,8 +5,7 @@ const target = one(".tiemr_second");
 const divide = 100;
 let timer, ttime = 0;
 
-
-function click() { // 처음 버튼클릭
+function init() {
 	stop_right_click();
 	let cnt;
 	let height;
@@ -15,7 +14,7 @@ function click() { // 처음 버튼클릭
 			cnt = ~~v.dataset.cnt;
 			height = ~~v.dataset.h;
 			if(v.classList.contains('replay')) return reload();
-			if ([9, 16, 30].indexOf(cnt) === -1) {
+			if ([9, 16, 30].indexOf(cnt) === -1 || [9, 16].indexOf(height) === -1) {
 				alert("값이 잘못되었습니다 다시 시도하여 주세요");
 				throw "wrong cnt";
 			}
@@ -24,35 +23,32 @@ function click() { // 처음 버튼클릭
 		})
 	});
 }
-function create_mw(cnt,height){// 입력받은 값 만큼 li 생성
-	let size,h, ani_cnt,lh;
+function create_mw(cnt,height) {
+	let sub_li = [],size,boom_cnt;
 	switch (cnt) {
 		case 9 :
 		size = 450;
-		h = 300;
-		lh = 32;
 		ani_cnt = "1";
+		boom_cnt = 10;
 		break;
 		case 16 : 
 		size = 800;
-		h = 600;
-		lh = 36;
 		ani_cnt = "2";
+		boom_cnt = 40;
 		break;
 		case 30 : 
 		size = 1500;
-		h = 850;
-		lh = 31;
 		ani_cnt = "3";
+		boom_cnt = 100;
 		break;
 		default : 
 		alert("잘못된 값입니다 다시 시도해 주세요.");
 		throw 'wrong cnt';
 		break;
 	}
-	const nav = one(".NW"), g_s = one(".g_s")
-	nav.style.width = size+"px";
-	nav.style.height = `${h}px`;
+	one(".NW").style.width = `${size}px`;
+	one(".op").style.width = `${size}px`;
+	one(".NW").style.height = `${height * 50}px`;
 	for(let i = 0; i < cnt; i++){
 		let li = crt("li");
 		let ul = crt("ul");
@@ -63,183 +59,125 @@ function create_mw(cnt,height){// 입력받은 값 만큼 li 생성
 		}
 		one("#menu").appendChild(li);
 	}
-	one(".first_screen").style.display = "none";
-	one(".replay").style.display = "none";
-	one(".op").style.width = `${size}px`;
-	one(".timer").classList.remove("hidden");
-	all("li").forEach(v => v.classList.add("black"));
-	all("#menu>li>ul>li").forEach(v => v.style.lineHeight = lh+"px");
-	all(".NW>ul>li>ul>li").forEach(v => v.style.height = `calc(100% / ${cnt} )`);
-	nav.style.visibility = "visible";
-	const li = Array.from(all(".sub_li"));
-	const two_arr = [];
-	for (let i =  0; i < cnt; i++) {
-		let i2 = i;
-		two_arr[i] = [];
-		for (let j = 0; j < cnt; j++) {
-			two_arr[i][j] = j == 0 ? li[i] : li[i2 += cnt];
+	all(".sub_li").forEach(v => v.style.height = `calc(100% / ${height})`);
+	all(".sub_li").forEach(v => v.classList.add("black"));
+	one(".NW").style.visibility = "visible";
+
+	const all_li = Array.from(all(".sub_li"));
+	for(let i = 0, len = height; i < len; i++){
+		let i2 = i; sub_li[i] = [];
+		for(let j = 0, len = cnt; j < len; j++){
+			sub_li[i][j] = j == 0 ? all_li[i] : all_li[i2 += height];
 		}
 	}
-
-	push_boom(cnt,two_arr);
+	play_game(sub_li,height,cnt,boom_cnt);
 }
-function play_game(two_arr,boom_arr,cnt,cnt2){//게임 시작
-	timer = setInterval(time,(1000/divide));
-	let chk_fir = 0,boom,ranX,ranY,chk_final = 0;;
-	const createRand = cnt => Math.floor(Math.random() * cnt-1) + 1;
-	two_arr.forEach((x,i)=> {
-		x.forEach((y,j) => {
+function play_game(sub_li,height,cnt,boom_cnt) {
+	const boom_arr = [];
+	let chk_fir = 0,chk_boom = [],num = 0,chk_final = 0;
+	sub_li.forEach((x,i)=>{
+		x.forEach((y,j)=>{
 			y.addEventListener("contextmenu",function(e){
 				if(e.button == 2){
-					if(y.style.background == "white"){
-						throw "이미 클릭한곳에는 우클릭을할 수 없습니다."; 
-					}else{
-						console.log("추가");
-						y.classList.toggle("boom");
-					}
+					if(y.style.background == "white") throw "이미 클릭한곳에는 우클릭을할 수 없습니다."; 
+					else y.classList.toggle("boom");
+					
 				}
 			})
-			y.addEventListener("click", e => {
-				let v,num = 0,num2 = 0;
-				if(chk_fir == 0){
-					for(let q = -1; q < 2; q++){
-						for(let w = -1; w < 2; w++){
-							if(two_arr[i+q] && two_arr[i+q][j+w]){
-								for(let t = 0; t < cnt2; t++){
-									for(let tt = 0 , len = boom_arr[t].length; tt < len; tt++){
-										boom = boom_arr[t][tt].split(",");
-										if(~~boom[0] == q+i && ~~boom[1] == w+j){
-											while(true){
-												ranX = createRand(cnt);
-												ranY = createRand(cnt);
-												if( ranX != ~~boom[0] && ranY != ~~boom[0]){
-													break;
-												}
-											}
-											boom_arr[t][tt] = ranX + "," + ranY;
-										}
-									}
-								}
+			y.addEventListener("click",e=>{
+				num = 0;
+				if(chk_fir == 0){// 처음 클릭씨 폭탄 생성
+					one(".timer").classList.remove("hidden");
+					timer = setInterval(time,(1000/divide));//처음 클릭시 타이머 시작
+					for(let q =  -1; q < 2; q++){
+						for(let w =  -1; w < 2; w++){
+							if(sub_li[q+i] && sub_li[q+i][w+j]) chk_boom.push([(q+i),(w+j)]);
+						}
+					}
+					let chk_cnt = 0;
+					const createRand = cnt => Math.floor(Math.random() * height-1) + 1;
+					for(let i=0,len = boom_cnt; i< len; i++){
+						let ranX = createRand(cnt);
+						let ranY = createRand(cnt);
+						let plug = true;
+						chk_boom.forEach(v =>{
+							while(ranX == v[0] && ranY == v[1]){
+								ranX = createRand(cnt);
+								ranY = createRand(cnt);
+							}
+						});
+						for (let j = 0, len = boom_arr.length; j < len; j++) {
+							if(boom_arr[j][0] == ranX && boom_arr[j][1] == ranY){
+								plug = false;
+								i--;
 							}
 						}
+						if (plug){
+							boom_arr.push([ranX,ranY]);
+						}
+
 					}
 					chk_fir = 1;
 				}
-				// for(let test = 0; test < boom_arr.length; test++){
-				// 	for(let test2 = 0; test2 < boom_arr[i].length; test2++){
-				// 		console.log(boom_arr[test][test2]);
-				// 	}
-				// }
-
-				for(let a = 0; a < cnt2; a++){
-					for(let b = 0,len = boom_arr[a].length; b < len; b++ ){
-						v = boom_arr[a][b].split(",");
-						if(~~v[0] == i && ~~v[1] == j){ 
-							clearInterval(timer);
-							return end_game(boom_arr,two_arr,cnt,cnt2);
+				for(let q =  0; q < boom_cnt; q++){// 클릭한 곳이 폭탄인지 확인
+					if(boom_arr[q][0] == i && boom_arr[q][1] == j) return lose(sub_li,boom_arr,cnt);
+				}
+				for(let q =  -1; q < 2; q++){// 클릭한 곳 주변이 폭탄인지 확인
+					for(let w =  -1; w < 2; w++){
+						if(q==0 && w==0) continue;
+						if(sub_li[q+i] && sub_li[q+i][w+j]){
+							for(let t = 0; t < boom_cnt; t++){
+								if(boom_arr[t][0] == (q+i) && boom_arr[t][1] == (w+j)) num++;
+							}
 						}
 					}
 				}
-				for(let q= -1; q<2; q++){
-					for(let w= -1; w<2; w++){
-						if(q==0 && w==0) continue;
-						if(two_arr[i+q] && two_arr[i+q][j+w]){
 
-							for(let t = 0; t < cnt2; t++){
-								for(let tt = 0 , len = boom_arr[t].length; tt < len; tt++){
-									boom = boom_arr[t][tt].split(",");
-									if(~~boom[0] == q+i && ~~boom[1] == w+j) num++;
-								}
-							}
-						} 
-					}
-				}
 				y.style.background = "white";
 				chk_final++;
 				if(num == 0){
 					for(let q= -1; q<2; q++){
 						for(let w= -1; w<2; w++){
 							if(q==0 && w==0) continue;
-							if(two_arr[i+q] && two_arr[i+q][j+w]){
-								if(two_arr[i+q][j+w].style.background != "white") two_arr[i+q][j+w].click();
+							if(sub_li[i+q] && sub_li[i+q][j+w]){
+								if(sub_li[i+q][j+w].style.background != "white") sub_li[i+q][j+w].click();
 							}
 						}
 					}
 				}else{
 					y.innerHTML = num; 
 				}
-				if(chk_final == ((cnt * cnt) - cnt2)){
+				if(chk_final == ((cnt * cnt) - boom_cnt)){
 					clearInterval(timer);
-					return clear();
+					return clear(sub_li,boom_arr,boom_cnt);
 				}
+
+
 			});
 		});
-	});	
-}
-function push_boom(cnt,two_arr){// 폭탄 넣기
-	let cnt2 = cnt;
-	if(cnt == 9) cnt2 = 10; 
-	if(cnt == 16) cnt2 = 40; 
-	if(cnt == 30) cnt2 = 110; 
-
-	const mine_arr= [];
-	const boom_arr = [];
-	const createRand = cnt => Math.floor(Math.random() * cnt-1) + 1
-	for(let i=0; i<cnt2; i++){
-		let x = createRand(cnt)
-		let y = createRand(cnt)
-		let plug = true;
-
-		for (let j = 0, len = mine_arr.length; j < len; j++) {
-			if(mine_arr[j][0] == x && mine_arr[j][1] == y){
-				plug = false;
-				i--;
-			}
-		}
-		if (plug){
-			mine_arr.push([x, y]);
-			boom_arr.push([x +","+y]);
-		}else
-		i--;
-	}
-	play_game(two_arr,boom_arr,cnt,cnt2);
-}
-function end_game(boom_arr,two_arr,cnt,cnt2){//게임 finish
-	for(let i = 0; i < cnt2; i++){
-		for(let j = 0 , len = boom_arr[i].length; j < len; j++){
-			let v = boom_arr[i][j].split(",");
-			two_arr[~~v[0]][~~v[1]].style.background = "red";
-		}
-	}
-	one(".op").style.display = "block";
-	one(".replay").style.display = "block";
-}
-function time(){ target.innerHTML = (++ttime/divide); }
-function clear(){
-	// one(".op").style.display = "block";
-	// one(".replay").style.display = "block";
-	alert("축하해요 클리어 하셨습니다"); 
-	for(let i = 0; i < cnt2; i++){
-		for(let j = 0 , len = boom_arr[i].length; j < len; j++){
-			let v = boom_arr[i][j].split(",");
-			two_arr[~~v[0]][~~v[1]].style.background = "red";
-		}
-	}
+	});
 }
 function stop_right_click() {
 	if(document.addEventListener){
 		document.addEventListener("contextmenu",function(e){
 			e.preventDefault();
-		})
-		
+		})		
 	}
 }
+function game_clear(sub_li,boom_arr,cnt) {
+	clearInterval(timer);
+	one(".op").style.display = "block";
+	one(".replay").style.display = "block";
+	alert("축하해요 클리어 하셨습니다"); 
+	boom_arr.forEach(v=> sub_li[v[0]][v[1]].style.background = "red");
+}
+function lose(sub_li,boom_arr,boom_cnt) {
+	clearInterval(timer);
+	one(".op").style.display = "block";
+	one(".replay").style.display = "block";
+	boom_arr.forEach(v=> sub_li[v[0]][v[1]].style.background = "red");
 
-HTMLElement.prototype.empty = function() {//create empty()
-	let that = this;
-	while (that.hasChildNodes()) {
-		that.removeChild(that.lastChild);
-	}
-};
-function reload(){ location.reload(); }
-window.onload = click; // widnow 실행시
+}
+function time() { target.innerHTML = (++ttime/divide); }
+function reload() { location.reload(); }
+window.onload = init;
