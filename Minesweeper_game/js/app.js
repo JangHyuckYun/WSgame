@@ -61,6 +61,8 @@ function create_mw(cnt,height) {
 	}
 	all(".sub_li").forEach(v => v.style.height = `calc(100% / ${height})`);
 	all(".sub_li").forEach(v => v.classList.add("black"));
+	all(".sub_li").forEach(v => {let div = crt("div"); v.appendChild(div).setAttribute("class","flag")});
+	all(".sub_li").forEach(v => {v.querySelector(".flag").classList.add("hidden")});
 	one(".NW").style.visibility = "visible";
 
 	const all_li = Array.from(all(".sub_li"));
@@ -79,12 +81,13 @@ function play_game(sub_li,height,cnt,boom_cnt) {
 		x.forEach((y,j)=>{
 			y.addEventListener("contextmenu",function(e){
 				if(e.button == 2){
-					if(y.style.background == "white") throw "이미 클릭한곳에는 우클릭을할 수 없습니다."; 
-					else y.classList.toggle("boom");
+					if(y.classList.contains('white')) throw "이미 클릭한곳에는 우클릭을할 수 없습니다."; 
+					else y.querySelector(".flag").classList.toggle("hidden");
 					
 				}
 			})
 			y.addEventListener("click",e=>{
+				if(!y.querySelector("div").classList.contains('hidden') && num != 0) return false;
 				num = 0;
 				if(chk_fir == 0){// 처음 클릭씨 폭탄 생성
 					one(".timer").classList.remove("hidden");
@@ -125,20 +128,21 @@ function play_game(sub_li,height,cnt,boom_cnt) {
 						if(q==0 && w==0) continue;
 						if(sub_li[q+i] && sub_li[q+i][w+j]){
 							for(let t = 0; t < boom_cnt; t++){
-								if(boom_arr[t][0] == (q+i) && boom_arr[t][1] == (w+j)){ num++;if(y.classList.contains('boom')) y.classList.remove("boom");}
+								if(boom_arr[t][0] == (q+i) && boom_arr[t][1] == (w+j)){ num++;}
+								if(y.querySelector("div").classList.contains('flag')) y.querySelector(".flag").classList.add("hidden");
 							}
 						}
 					}
 				}
 
-				y.classList.add("asd");
+				y.classList.add("white");
 				chk_final++;
 				if(num == 0){
 					for(let q= -1; q<2; q++){
 						for(let w= -1; w<2; w++){
 							if(q==0 && w==0) continue;
 							if(sub_li[i+q] && sub_li[i+q][j+w]){
-								if(!sub_li[i+q][j+w].classList.contains('asd')) { sub_li[i+q][j+w].click();};
+								if(!sub_li[i+q][j+w].classList.contains('white')) { sub_li[i+q][j+w].click();};
 							}
 						}
 					}
