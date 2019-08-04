@@ -85,7 +85,6 @@ function play_game(sub_li,height,cnt,boom_cnt) {
 				}
 			})
 			y.addEventListener("click",e=>{
-				if(y.classList.contains('boom')) return false;
 				num = 0;
 				if(chk_fir == 0){// 처음 클릭씨 폭탄 생성
 					one(".timer").classList.remove("hidden");
@@ -126,7 +125,7 @@ function play_game(sub_li,height,cnt,boom_cnt) {
 						if(q==0 && w==0) continue;
 						if(sub_li[q+i] && sub_li[q+i][w+j]){
 							for(let t = 0; t < boom_cnt; t++){
-								if(boom_arr[t][0] == (q+i) && boom_arr[t][1] == (w+j)) num++;
+								if(boom_arr[t][0] == (q+i) && boom_arr[t][1] == (w+j)){ num++;if(y.classList.contains('boom')) y.classList.remove("boom");}
 							}
 						}
 					}
