@@ -85,6 +85,7 @@ function play_game(sub_li,height,cnt,boom_cnt) {
 				}
 			})
 			y.addEventListener("click",e=>{
+				if(y.classList.contains('boom')) return false;
 				num = 0;
 				if(chk_fir == 0){// 처음 클릭씨 폭탄 생성
 					one(".timer").classList.remove("hidden");
@@ -95,17 +96,15 @@ function play_game(sub_li,height,cnt,boom_cnt) {
 						}
 					}
 					let chk_cnt = 0;
-					const createRand = cnt => Math.floor(Math.random() * height-1) + 1;
+					const createRand = cnt => Math.floor(Math.random() * cnt-1) + 1;
 					for(let i=0,len = boom_cnt; i< len; i++){
-						let ranX = createRand(cnt);
+						let ranX = createRand(height);
 						let ranY = createRand(cnt);
 						let plug = true;
-						chk_boom.forEach(v =>{
-							while(ranX == v[0] && ranY == v[1]){
-								ranX = createRand(cnt);
-								ranY = createRand(cnt);
-							}
-						});
+						while(chk_boom.find(f => f[0] == ranX && f[1] == ranY)){
+							ranX = createRand(height);
+							ranY = createRand(cnt);
+						}
 						for (let j = 0, len = boom_arr.length; j < len; j++) {
 							if(boom_arr[j][0] == ranX && boom_arr[j][1] == ranY){
 								plug = false;
@@ -133,14 +132,14 @@ function play_game(sub_li,height,cnt,boom_cnt) {
 					}
 				}
 
-				y.style.background = "white";
+				y.classList.add("asd");
 				chk_final++;
 				if(num == 0){
 					for(let q= -1; q<2; q++){
 						for(let w= -1; w<2; w++){
 							if(q==0 && w==0) continue;
 							if(sub_li[i+q] && sub_li[i+q][j+w]){
-								if(sub_li[i+q][j+w].style.background != "white") sub_li[i+q][j+w].click();
+								if(!sub_li[i+q][j+w].classList.contains('asd')) { sub_li[i+q][j+w].click();};
 							}
 						}
 					}

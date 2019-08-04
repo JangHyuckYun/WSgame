@@ -5,6 +5,7 @@ body{overflow: hidden;}
 .hidden{visibility: hidden;}
 .start{background: black;}
 .black{background: black;}
+.asd{background: white;}
 /*.boom{content = "asd"; position: relative; z-index: 10000; background-image: url("../img/dra.png"); background-size: 50px 50px; background-repeat: no-repeat; }*/
 .boom{background: blue; position: relative; z-index: 100000;}
 header{position: fixed; width: 100%;}
