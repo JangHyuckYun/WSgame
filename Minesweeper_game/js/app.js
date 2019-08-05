@@ -87,6 +87,7 @@ function play_game(sub_li,height,cnt,boom_cnt) {
 				}
 			})
 			y.addEventListener("click",e=>{
+				if(chk_fir == 0 && !y.querySelector("div").classList.contains('hidden')) return false;
 				if(!y.querySelector("div").classList.contains('hidden') && num != 0) return false;
 				num = 0;
 				if(chk_fir == 0){// 처음 클릭씨 폭탄 생성
