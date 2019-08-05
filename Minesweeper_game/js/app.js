@@ -136,7 +136,7 @@ function play_game(sub_li,height,cnt,boom_cnt) {
 				}
 
 				y.classList.add("white");
-				chk_final++;
+				chk_final = Array.from(all(".sub_li")).filter(v=> v.classList.contains('white')).length;
 				if(num == 0){
 					for(let q= -1; q<2; q++){
 						for(let w= -1; w<2; w++){
@@ -166,7 +166,7 @@ function stop_right_click() {
 		})		
 	}
 }
-function game_clear(sub_li,boom_arr,cnt) {
+function clear(sub_li,boom_arr,boom_cnt) {
 	clearInterval(timer);
 	one(".op").style.display = "block";
 	one(".replay").style.display = "block";
